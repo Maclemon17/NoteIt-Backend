@@ -11,13 +11,13 @@ const noteSchema = new mongoose.Schema({
     },
     author: {
         type: mongoose.schema.Types.ObjectId,
-        ref: "User",
+        ref: "Users",
         required: true,
     }
 
 }, { timestamps: true }
 )
 
-const Note = mongoose.model("Notes", noteSchema);
+const Notes = mongoose.model("Notes", noteSchema);
 
-module.exports = Note;
+module.exports = Notes;

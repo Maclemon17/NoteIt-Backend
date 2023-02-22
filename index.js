@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 
 const config = require("./src/config/config");
+const registerRoutes = require("./src/routes/routes");
 
 
 const app = express();
@@ -11,6 +12,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// API ROUTES
+registerRoutes(app);
+
 
 // connect DB
 const connectDB = async () => {
