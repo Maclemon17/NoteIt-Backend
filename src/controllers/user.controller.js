@@ -1,4 +1,4 @@
-const { hidePassword } = require("../../helpers/password");
+const { hidePassword } = require("../helpers/password");
 const Users = require("../models/user.model");
 const User = require("../models/user.model");
 
