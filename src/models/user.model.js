@@ -22,12 +22,6 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: ""
     },
-    notes: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Notes"
-        }
-    ],
     hasAcceptedTerms: {
         type: Boolean,
         default: false
@@ -48,6 +42,20 @@ userSchema.pre("save", function (next) {
     });
 
 })
+
+
+userSchema.methods.validatePassword = function (password, callBack) {
+
+    bcrypt.compare(password, this.password, (err, isValid) => {
+        if (!err) {
+            callBack(err, isValid);
+        } else {
+            console.log(err);
+            next();
+        }
+    })
+}
+
 
 const Users = mongoose.model("Users", userSchema);
 

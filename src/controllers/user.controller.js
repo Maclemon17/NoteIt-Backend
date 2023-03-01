@@ -1,18 +1,19 @@
 const { hidePassword } = require("../helpers/password");
 const Users = require("../models/user.model");
-const User = require("../models/user.model");
 
-
+// @desc    Register new User
+// @route   POST /api/user/register
+// @access  Public
 const registerUser = async (req, res, next) => {
     try {
         const { email, username } = req.body;
-        let newUser = new Users({...req.body, email: email.toLowerCase()})
+        let newUser = new Users({ ...req.body, email: email.toLowerCase() })
 
         // check if username or password already exists
-        const user = await User.findOne({
+        const user = await Users.findOne({
             $or: [{ email: email.toLowerCase() }, { username: username.toLowerCase() }]
         })
-    
+
         if (user) {
             if (user.username === username.toLowerCase() && user.email === email.toLowerCase()) {
                 return res.json({ message: "User Already exists", status: false })
@@ -20,7 +21,7 @@ const registerUser = async (req, res, next) => {
                 return res.json({ message: "Username Already exists", status: false })
             } else if (user.email === email.toLowerCase()) {
                 return res.json({ message: "Email Already exists", status: false })
-            } 
+            }
         } else {
             // save to database
             try {
@@ -28,7 +29,7 @@ const registerUser = async (req, res, next) => {
 
                 // HIDE PASSWORD
                 const userInfo = await hidePassword(newUser);
-               
+
                 return res.status(201).json({ message: "user created", status: true, data: userInfo })
 
             } catch (error) {
@@ -43,6 +44,17 @@ const registerUser = async (req, res, next) => {
 }
 
 
+// @desc    Get user PRofile
+// @route   GET /api/user/profile
+// @access  Private
+const getProfile = async (req, res) => {
+    // get the authenticated user details
+    const { email } = await req.user;
+    // console.log(user.email);
+    const authenticatedUser = await Users.findOne({ email }).select("-password");
+
+    res.status(200).json({ message: "Profile ready", status: true, data: authenticatedUser })
+}
 
 const test = (req, res) => {
     res.json({
@@ -54,5 +66,6 @@ const test = (req, res) => {
 
 module.exports = {
     registerUser,
+    getProfile,
     test
 }
