@@ -11,9 +11,7 @@ const authMiddleware = async (req, res, next) => {
         try {
             // decode token
             const decoded = decodeToken(token);
-console.log(decoded);
-            req.user = decoded;
-            // console.log(decoded);
+        
             req.user = await Users.findOne({ email: decoded.data }).select("-password");
 
             return next();
