@@ -1,4 +1,5 @@
 const { secret } = require("../config/config");
+const { hidePassword } = require("../helpers/password");
 const Users = require("../models/user.model");
 const jwt = require("jsonwebtoken");
 
@@ -12,6 +13,9 @@ const loginUser = async (req, res, next) => {
     try {
         // check if user exists
         let user = await Users.findOne({ email });
+
+        // hide user password to send with response
+        const userInfo = await hidePassword(user);
 
         if (!user) {
             res.status(404).json({ message: "User not found", status: false })
@@ -27,19 +31,15 @@ const loginUser = async (req, res, next) => {
                         // GENERATE TOKEN
                         const token = generateToken(user.email);
 
-                        const userInfo = {
-                            username: user.username,
-                            email: user.email,
-
-                        }
-
-                        res.status(200).json({ message: "Loggedin successfull", status: true, token })
+                        res.status(200).json({ message: "Loggedin successfull", status: true, userInfo, token })
                     }
                 }
             })
         }
     } catch (error) {
         console.log(error);
+
+        res.status(501).json({ message: error.message, status: false })
     }
 }
 
