@@ -1,3 +1,4 @@
+const { trusted } = require("mongoose");
 const Notes = require("../models/note.model");
 const Users = require("../models/user.model");
 
@@ -35,35 +36,116 @@ const getNote = async (req, res, next) => {
             select: "email username"
         })
 
+        // check if note exist
+        if (!note) {
+            return res.status(404).json({ message: "Note not found", status: false })
+        }
+
         // check if the user is authorised
-        if (req.user._id.toString() !== note.author._id.toString()) {
+        if (req.user.id.toString() !== note.author.id.toString()) {
             return res.status(401).json({ message: "Unauthorised User", status: false })
         }
 
-        res.status(200).json({ message: "Note ready", status: true, note })
+        res.status(200).json({ message: "Note ready", status: true, data: note })
     } catch (error) {
         console.log(error.message);
         res.status(500).json({ message: "Server Error", status: false })
     }
 }
 
-// @desc    get a single note
+// @desc    get all notes
 // @route   GET /api/user/notes
 // @access  Private
 const getAllNotes = async (req, res, next) => {
+    try {
+        const allNotes = await Notes.find({ author: req.user.id }).populate({
+            path: "author",
+            select: "email username"
+        })
 
-    console.log("get all notes....");
+        // check if notes is not empty
+        if (allNotes.length != 0) {
+            // check if the user is authorised
+            if (req.user.id.toString() !== allNotes[0].author.id.toString()) {
+                return res.status(401).json({ message: "Unauthorised User", status: false })
+            }
+
+            res.status(200).json({ message: "Note ready", status: true, allNotes })
+        } else {
+            res.status(200).json({ message: "User note is empty", status: false, data: allNotes })
+        }
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Server Error", status: false })
+    }
 }
 
-
+// @desc    update note
+// @route   PUT /api/user/notes/noteId
+// @access  Private
 const updateNote = async (req, res, next) => {
+    try {
+        const note = await Notes.findById(req.params.noteId)
 
-    console.log("update note....");
+        if (!note) {
+            return res.status(400).json({ message: "Note not found", status: false })
+        }
+
+        // check if user exists
+        const user = await Users.findById(req.user.id)
+
+        // check if user is authorised
+        if (note.author.toString() !== user.id) {
+            return res.status(401).json({ message: "Unauthorised User", status: false })
+        }
+
+        // update the selected note resource
+        const updatedNote = await Notes.findByIdAndUpdate(req.params.noteId, req.body,
+            { new: true }
+        )
+
+        return res.status(200).json({
+            message: "Note Updated",
+            status: true,
+            data: updatedNote
+        })
+
+    } catch (error) {
+        console.log(error.message)
+        return res.status(500).json({ message: "Server Error", status: false })
+    }
+
 }
 
+// @desc    get a single note
+// @route   DELETE /api/user/notes/noteId
+// @access  Private
 const deleteNote = async (req, res, next) => {
+    try {
+        const note = await Notes.findById(req.params.noteId)
 
-    console.log("delete single note....");
+        if (!note) {
+            return res.status(400).json({ message: "Note not found", status: false })
+        }
+
+        // check if user exists
+        const user = await Users.findById(req.user.id)
+
+        // check if user is authorised
+        if (note.author.toString() !== user.id) {
+            res.status(401).json({ message: "Unauthorised User", status: false })
+        }
+
+        const deletedNote = await Notes.findByIdAndDelete(req.params.noteId)
+
+        return res.status(200).json({ message: "Note deleted", status: true, deletedNote })
+
+    } catch (error) {
+        console.log(error.message)
+        return res.status(500).json({ message: "Server Error", status: false })
+    }
+
 }
 
 
