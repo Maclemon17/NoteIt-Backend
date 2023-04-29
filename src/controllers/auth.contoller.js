@@ -9,7 +9,7 @@ const jwt = require("jsonwebtoken");
 // @access  Public
 const loginUser = async (req, res, next) => {
     const { email, password } = req.body;
-
+    console.log(req.body);
     try {
         // check if user exists
         let user = await Users.findOne({ email });
@@ -31,7 +31,12 @@ const loginUser = async (req, res, next) => {
                         // GENERATE TOKEN
                         const token = generateToken(user.email);
 
-                        res.status(200).json({ message: "Loggedin successfull", status: true, userInfo, token })
+                        res.status(200).json({
+                            message: "Loggedin successfull",
+                            status: true,
+                            userInfo,
+                            token
+                        })
                     }
                 }
             })

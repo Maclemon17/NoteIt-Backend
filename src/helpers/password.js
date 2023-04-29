@@ -1,9 +1,10 @@
 exports.hidePassword = async (data) => {
-    const user = await {...data._doc};
+    if (data) {
+        const user = await { ...data._doc };
+        delete user.password;
 
-    delete user.password;
+        return user;
+    }
 
-
-    return user;
 }
 

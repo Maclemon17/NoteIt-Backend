@@ -13,6 +13,7 @@ const registerUser = async (req, res, next) => {
         const user = await Users.findOne({
             $or: [{ email: email.toLowerCase() }, { username: username.toLowerCase() }]
         })
+        // console.log(user);
 
         if (user) {
             if (user.username === username.toLowerCase() && user.email === email.toLowerCase()) {
@@ -44,7 +45,7 @@ const registerUser = async (req, res, next) => {
 }
 
 
-// @desc    Get user PRofile
+// @desc    Get user Profile
 // @route   GET /api/user/profile
 // @access  Private
 const getProfile = async (req, res) => {

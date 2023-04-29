@@ -1,4 +1,3 @@
-const { trusted } = require("mongoose");
 const Notes = require("../models/note.model");
 const Users = require("../models/user.model");
 
