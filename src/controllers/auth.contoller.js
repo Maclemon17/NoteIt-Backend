@@ -26,7 +26,7 @@ const loginUser = async (req, res, next) => {
                     res.status(501).json({ message: "Server Error", status: false })
                 } else {
                     if (!isValid) {
-                        res.status(400).json({ message: "Invalid credentials", status: false })
+                        res.status(401).json({ message: "Invalid credentials", status: false })
                     } else {
                         // GENERATE TOKEN
                         const token = generateToken(user.email);

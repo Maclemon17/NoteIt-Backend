@@ -88,7 +88,7 @@ const updateNote = async (req, res, next) => {
         const note = await Notes.findById(req.params.noteId)
 
         if (!note) {
-            return res.status(400).json({ message: "Note not found", status: false })
+            return res.status(404).json({ message: "Note not found", status: false })
         }
 
         // check if user exists
@@ -117,7 +117,7 @@ const updateNote = async (req, res, next) => {
 
 }
 
-// @desc    get a single note
+// @desc    delete a single note
 // @route   DELETE /api/user/notes/noteId
 // @access  Private
 const deleteNote = async (req, res, next) => {

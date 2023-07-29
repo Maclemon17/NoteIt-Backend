@@ -8,7 +8,7 @@ const router = require("express").Router();
 router.post("/notes", authMiddleware, noteValidator.addNote, addNote);
 router.get("/notes/:noteId", authMiddleware, getNote);
 router.get("/notes", authMiddleware, getAllNotes);
-router.patch("/notes/:noteId", authMiddleware, noteValidator.editNote, updateNote);
+router.put("/notes/:noteId", authMiddleware, noteValidator.editNote, updateNote);
 router.delete("/notes/:noteId", authMiddleware, deleteNote);
 
 const noteRouter = router;
